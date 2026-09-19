@@ -803,19 +803,102 @@ function markTicketNumber(number){
 
 
 /* CLAIM */
+let claimedPrizes = {};
 
 function claim(type){
 
   if(calledNumbers.length === 0){
-
-    alert("No numbers have been called yet.");
-
+    alert("❌ No numbers have been called yet.");
     return;
   }
 
+  if(claimedPrizes[type]){
+    alert("⚠️ " + type + " has already been claimed!");
+    return;
+  }
+
+  const markedNumbers = ticketNumbers
+    .flat()
+    .filter(n => n !== null && calledNumbers.includes(n));
+
+
+  /* EARLY 5 */
+
+  if(type === "Early 5"){
+
+    if(markedNumbers.length < 5){
+      alert(
+        "❌ Not eligible yet!\n\n" +
+        "You need 5 called numbers on your ticket.\n" +
+        "Currently marked: " + markedNumbers.length
+      );
+      return;
+    }
+  }
+
+
+  /* TOP LINE */
+
+  if(type === "Top Line"){
+
+    const row = ticketNumbers[0].filter(n => n !== null);
+
+    if(!row.every(n => calledNumbers.includes(n))){
+      alert("❌ Top Line is not complete yet!");
+      return;
+    }
+  }
+
+
+  /* MIDDLE LINE */
+
+  if(type === "Middle Line"){
+
+    const row = ticketNumbers[1].filter(n => n !== null);
+
+    if(!row.every(n => calledNumbers.includes(n))){
+      alert("❌ Middle Line is not complete yet!");
+      return;
+    }
+  }
+
+
+  /* BOTTOM LINE */
+
+  if(type === "Bottom Line"){
+
+    const row = ticketNumbers[2].filter(n => n !== null);
+
+    if(!row.every(n => calledNumbers.includes(n))){
+      alert("❌ Bottom Line is not complete yet!");
+      return;
+    }
+  }
+
+
+  /* FULL HOUSE */
+
+  if(type === "Full House"){
+
+    const allNumbers = ticketNumbers
+      .flat()
+      .filter(n => n !== null);
+
+    if(!allNumbers.every(n => calledNumbers.includes(n))){
+      alert("❌ Full House is not complete yet!");
+      return;
+    }
+  }
+
+
+  /* VALID CLAIM */
+
+  claimedPrizes[type] = true;
+
   alert(
-    "🏆 "+type+
-    " claim submitted!\n\nHost will verify your claim."
+    "🎉 CONGRATULATIONS!\n\n" +
+    "🏆 " + type + " WINNER!\n\n" +
+    "Your claim has been verified successfully."
   );
 
 }
@@ -830,7 +913,7 @@ function resetGame(){
   calledNumbers = [];
 
   currentNumber = null;
-
+  claimedPrizes = {};
   document
     .getElementById("currentNumber")
     .textContent = "-";
@@ -847,8 +930,7 @@ function resetGame(){
   document
     .getElementById("gameStatus")
     .textContent =
-    "Ready to start";
-
+    "Ready to start" 
   createNumberBoard();
 
   generateTicket();
