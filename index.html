@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tambola Live</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial, sans-serif;
+  background:#0b1020;
+  color:#fff;
+  min-height:100vh;
+}
+
+.header{
+  padding:20px 16px;
+  text-align:center;
+  background:linear-gradient(135deg,#151d38,#0b1020);
+  border-bottom:1px solid #293252;
+}
+
+.logo{
+  font-size:28px;
+  font-weight:800;
+}
+
+.logo span{
+  color:#ffcc33;
+}
+
+.subtitle{
+  color:#9ca8c7;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:18px;
+}
+
+.card{
+  background:#151c31;
+  border:1px solid #293252;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+h2{
+  margin-bottom:14px;
+  font-size:20px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #37415f;
+  background:#0d1325;
+  color:white;
+  font-size:16px;
+  outline:none;
+  margin-bottom:12px;
+}
+
+input:focus{
+  border-color:#ffcc33;
+}
+
+button{
+  border:none;
+  border-radius:12px;
+  padding:13px 18px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  background:#ffcc33;
+  color:#111;
+  transition:.2s;
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+button.secondary{
+  background:#293252;
+  color:white;
+}
+
+button.danger{
+  background:#e74c3c;
+  color:white;
+}
+
+.home-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.big-number{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  margin:15px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:58px;
+  font-weight:900;
+  background:linear-gradient(145deg,#ffcc33,#f39c12);
+  color:#111;
+  box-shadow:0 10px 35px rgba(255,204,51,.2);
+}
+
+.center{
+  text-align:center;
+}
+
+.game-info{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.info-box{
+  flex:1;
+  background:#0d1325;
+  border-radius:12px;
+  padding:12px;
+  text-align:center;
+}
+
+.info-box small{
+  color:#8e99b5;
+  display:block;
+  margin-bottom:5px;
+}
+
+.info-box strong{
+  font-size:20px;
+}
+
+.number-board{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  gap:6px;
+}
+
+.number{
+  aspect-ratio:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  border-radius:8px;
+  background:#0d1325;
+  color:#b7c0d9;
+  font-weight:bold;
+  border:1px solid #252e49;
+}
+
+.number.called{
+  background:#ffcc33;
+  color:#111;
+  border-color:#ffcc33;
+}
+
+.ticket{
+  background:#f7f7f7;
+  border-radius:14px;
+  padding:8px;
+  max-width:600px;
+  margin:auto;
+}
+
+.ticket-title{
+  color:#111;
+  text-align:center;
+  font-weight:800;
+  padding:7px;
+}
+
+.ticket-grid{
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:3px;
+}
+
+.cell{
+  aspect-ratio:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:white;
+  color:#222;
+  border:1px solid #ddd;
+  font-weight:800;
+  font-size:16px;
+  border-radius:4px;
+}
+
+.cell.empty{
+  background:#e9e9e9;
+}
+
+.cell.marked{
+  background:#ffcc33;
+  color:#111;
+  position:relative;
+}
+
+.cell.marked::after{
+  content:"✓";
+  position:absolute;
+  font-size:25px;
+  color:#111;
+}
+
+.called-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+
+.called-pill{
+  background:#293252;
+  padding:7px 10px;
+  border-radius:20px;
+  font-weight:bold;
+}
+
+.hidden{
+  display:none;
+}
+
+.status{
+  text-align:center;
+  color:#9ca8c7;
+  font-size:14px;
+  margin-top:10px;
+}
+
+.claims{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.claim{
+  background:#202943;
+  padding:12px;
+  border-radius:12px;
+  color:white;
+}
+
+.footer{
+  text-align:center;
+  color:#68738f;
+  font-size:13px;
+  padding:20px;
+}
+
+@media(max-width:500px){
+  .number-board{
+    gap:4px;
+  }
+
+  .number{
+    font-size:12px;
+  }
+
+  .cell{
+    font-size:13px;
+  }
+
+  .big-number{
+    width:125px;
+    height:125px;
+    font-size:48px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="logo">🎟️ TAMBOLA <span>LIVE</span></div>
+  <div class="subtitle">Play Tambola with your friends</div>
+</header>
+
+<main class="container">
+
+<!-- HOME -->
+<section id="home">
+
+  <div class="card">
+    <h2>🎮 Start a Game</h2>
+
+    <input id="playerName"
+           placeholder="Enter your name"
+           maxlength="20">
+
+    <div class="home-buttons">
+      <button onclick="createGame()">Create Game</button>
+      <button class="secondary" onclick="showJoin()">Join Game</button>
+    </div>
+  </div>
+
+  <div id="joinBox" class="card hidden">
+    <h2>🔑 Join Game</h2>
+
+    <input id="joinCode"
+           placeholder="Enter game code"
+           maxlength="6">
+
+    <button onclick="joinGame()">Join Game</button>
+  </div>
+
+  <div class="card">
+    <h2>✨ Features</h2>
+
+    <p style="color:#aeb8d0;line-height:1.7">
+      🎲 Live number calling<br>
+      🎟️ Automatic Tambola ticket<br>
+      🔴 Automatic number marking<br>
+      🏆 Winning claims<br>
+      📱 Mobile friendly design
+    </p>
+  </div>
+
+</section>
+
+
+<!-- GAME -->
+<section id="game" class="hidden">
+
+  <div class="game-info">
+
+    <div class="info-box">
+      <small>Game Code</small>
+      <strong id="gameCode">------</strong>
+    </div>
+
+    <div class="info-box">
+      <small>Player</small>
+      <strong id="playerDisplay">Player</strong>
+    </div>
+
+    <div class="info-box">
+      <small>Called</small>
+      <strong id="countDisplay">0</strong>
+    </div>
+
+  </div>
+
+
+  <!-- CALLER -->
+  <div class="card center">
+
+    <h2>🎲 Number Caller</h2>
+
+    <div class="big-number" id="currentNumber">
+      -
+    </div>
+
+    <button onclick="callNumber()">
+      ▶️ CALL NEXT NUMBER
+    </button>
+
+    <button class="secondary"
+            onclick="resetGame()"
+            style="margin-left:6px">
+      New Game
+    </button>
+
+    <div class="status" id="gameStatus">
+      Ready to start
+    </div>
+
+  </div>
+
+
+  <!-- NUMBER BOARD -->
+  <div class="card">
+
+    <h2>🔢 Number Board</h2>
+
+    <div class="number-board" id="numberBoard"></div>
+
+    <h3 style="margin-top:18px">
+      Called Numbers
+    </h3>
+
+    <div class="called-list" id="calledList">
+      No numbers called yet
+    </div>
+
+  </div>
+
+
+  <!-- TICKET -->
+  <div class="card">
+
+    <h2>🎟️ Your Tambola Ticket</h2>
+
+    <div class="ticket">
+
+      <div class="ticket-title">
+        TAMBOLA LIVE
+      </div>
+
+      <div class="ticket-grid" id="ticketGrid"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- CLAIMS -->
+  <div class="card">
+
+    <h2>🏆 Winning Claims</h2>
+
+    <div class="claims">
+
+      <button class="claim"
+              onclick="claim('Early 5')">
+        🖐️ Early 5
+      </button>
+
+      <button class="claim"
+              onclick="claim('Top Line')">
+        🥇 Top Line
+      </button>
+
+      <button class="claim"
+              onclick="claim('Middle Line')">
+        🥈 Middle Line
+      </button>
+
+      <button class="claim"
+              onclick="claim('Bottom Line')">
+        🥉 Bottom Line
+      </button>
+
+      <button class="claim"
+              onclick="claim('Full House')">
+        👑 Full House
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer class="footer">
+  Tambola Live • Made with ❤️
+</footer>
+
+
+<script>
+
+let calledNumbers = [];
+let ticketNumbers = [];
+let currentNumber = null;
+
+
+/* CREATE GAME */
+
+function createGame(){
+
+  const name =
+    document.getElementById("playerName").value.trim();
+
+  if(!name){
+    alert("Please enter your name");
+    return;
+  }
+
+  const code =
+    Math.floor(100000 + Math.random()*900000);
+
+  document.getElementById("gameCode").textContent = code;
+
+  document.getElementById("playerDisplay").textContent = name;
+
+  document.getElementById("home").classList.add("hidden");
+
+  document.getElementById("game").classList.remove("hidden");
+
+  createNumberBoard();
+
+  generateTicket();
+
+}
+
+
+/* JOIN */
+
+function showJoin(){
+
+  document
+    .getElementById("joinBox")
+    .classList.remove("hidden");
+
+}
+
+
+function joinGame(){
+
+  const name =
+    document.getElementById("playerName").value.trim();
+
+  const code =
+    document.getElementById("joinCode").value.trim();
+
+  if(!name){
+    alert("Enter your name first");
+    return;
+  }
+
+  if(code.length < 4){
+    alert("Enter a valid game code");
+    return;
+  }
+
+  document.getElementById("gameCode").textContent = code;
+
+  document.getElementById("playerDisplay").textContent = name;
+
+  document.getElementById("home").classList.add("hidden");
+
+  document.getElementById("game").classList.remove("hidden");
+
+  createNumberBoard();
+
+  generateTicket();
+
+}
+
+
+/* NUMBER BOARD */
+
+function createNumberBoard(){
+
+  const board =
+    document.getElementById("numberBoard");
+
+  board.innerHTML = "";
+
+  for(let i=1;i<=90;i++){
+
+    const div =
+      document.createElement("div");
+
+    div.className = "number";
+
+    div.id = "number-"+i;
+
+    div.textContent = i;
+
+    board.appendChild(div);
+
+  }
+
+}
+
+
+/* CALL NUMBER */
+
+function callNumber(){
+
+  if(calledNumbers.length >= 90){
+
+    alert("All numbers have been called!");
+
+    return;
+  }
+
+  let number;
+
+  do{
+
+    number =
+      Math.floor(Math.random()*90)+1;
+
+  }while(calledNumbers.includes(number));
+
+
+  calledNumbers.push(number);
+
+  currentNumber = number;
+
+
+  document
+    .getElementById("currentNumber")
+    .textContent = number;
+
+
+  document
+    .getElementById("number-"+number)
+    .classList.add("called");
+
+
+  document
+    .getElementById("countDisplay")
+    .textContent =
+    calledNumbers.length;
+
+
+  updateCalledList();
+
+  markTicketNumber(number);
+
+  document
+    .getElementById("gameStatus")
+    .textContent =
+    "Number "+number+" called!";
+
+
+  speakNumber(number);
+
+}
+
+
+/* CALLED LIST */
+
+function updateCalledList(){
+
+  const list =
+    document.getElementById("calledList");
+
+  list.innerHTML = "";
+
+  [...calledNumbers]
+    .reverse()
+    .forEach(number => {
+
+      const span =
+        document.createElement("span");
+
+      span.className = "called-pill";
+
+      span.textContent = number;
+
+      list.appendChild(span);
+
+    });
+
+}
+
+
+/* SPEAK NUMBER */
+
+function speakNumber(number){
+
+  if("speechSynthesis" in window){
+
+    const speech =
+      new SpeechSynthesisUtterance(
+        "Number " + number
+      );
+
+    speech.rate = 0.9;
+
+    window.speechSynthesis.speak(speech);
+
+  }
+
+}
+
+
+/* GENERATE TICKET */
+
+function generateTicket(){
+
+  const grid =
+    document.getElementById("ticketGrid");
+
+  grid.innerHTML = "";
+
+  ticketNumbers = [];
+
+  /*
+   Simple 3 x 9 Tambola-style ticket.
+   Each row gets 5 numbers.
+  */
+
+  let ticket =
+    Array.from(
+      {length:3},
+      () => Array(9).fill(null)
+    );
+
+
+  for(let row=0; row<3; row++){
+
+    let columns =
+      [...Array(9).keys()]
+      .sort(()=>Math.random()-0.5)
+      .slice(0,5);
+
+    columns.sort((a,b)=>a-b);
+
+    columns.forEach(col => {
+
+      let min = col*10+1;
+
+      let max =
+        col===8 ? 90 : col*10+10;
+
+      let num;
+
+      do{
+
+        num =
+          Math.floor(
+            Math.random() *
+            (max-min+1)
+          ) + min;
+
+      }while(
+        ticket.flat().includes(num)
+      );
+
+      ticket[row][col] = num;
+
+    });
+
+  }
+
+
+  ticketNumbers = ticket;
+
+
+  for(let r=0;r<3;r++){
+
+    for(let c=0;c<9;c++){
+
+      const cell =
+        document.createElement("div");
+
+      cell.className = "cell";
+
+      const number =
+        ticket[r][c];
+
+      if(number){
+
+        cell.textContent = number;
+
+        cell.dataset.number = number;
+
+      }else{
+
+        cell.classList.add("empty");
+
+      }
+
+      grid.appendChild(cell);
+
+    }
+
+  }
+
+}
+
+
+/* MARK TICKET */
+
+function markTicketNumber(number){
+
+  const cells =
+    document.querySelectorAll(
+      ".cell[data-number='"+number+"']"
+    );
+
+  cells.forEach(cell => {
+
+    cell.classList.add("marked");
+
+  });
+
+}
+
+
+/* CLAIM */
+
+function claim(type){
+
+  if(calledNumbers.length === 0){
+
+    alert("No numbers have been called yet.");
+
+    return;
+  }
+
+  alert(
+    "🏆 "+type+
+    " claim submitted!\n\nHost will verify your claim."
+  );
+
+}
+
+
+/* RESET */
+
+function resetGame(){
+
+  if(!confirm("Start a new game?")) return;
+
+  calledNumbers = [];
+
+  currentNumber = null;
+
+  document
+    .getElementById("currentNumber")
+    .textContent = "-";
+
+  document
+    .getElementById("countDisplay")
+    .textContent = "0";
+
+  document
+    .getElementById("calledList")
+    .innerHTML =
+    "No numbers called yet";
+
+  document
+    .getElementById("gameStatus")
+    .textContent =
+    "Ready to start";
+
+  createNumberBoard();
+
+  generateTicket();
+
+}
+
+</script>
+
+</body>
+</html>a
